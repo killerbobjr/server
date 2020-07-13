@@ -59,16 +59,11 @@ def start_mac_services():
 def run_integration_example():
   base.cmd_in_dir('../document-server-integration/web/documentserver-example/nodejs', 'python', ['run-develop.py'])
 
-check_nodejs()
-check_java()
-check_erlang()
-check_mysql()
+installDevelop.check_all_programs()
 
 if (True != check_nodejs_version()):
   exit(0)
 
-installDevelop.cast_nodejs()
-exit(0)
 platform = base.host_platform()
 if ("windows" == platform):
   restart_win_rabbit()

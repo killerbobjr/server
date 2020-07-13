@@ -99,6 +99,31 @@ def check_mysql():#Проверяет версию MySQL устанавлива�
     if (number_version_mysql() == ""):
         installer_mysql()
 
+def check_ST():#Проверяет версию source tree устанавливает или меняет её
+    
+    if (number_version_ST() == ""):
+        installer_ST()
+
+def check_Git():#Проверяет версию Git устанавливает или меняет её
+    
+    if (number_version_Git() == ""):
+        installer_Git()
+
+def check_RabbitMQ():#Проверяет версию RabbitMQ устанавливает или меняет её
+    
+    if (number_version_RabbitMQ() == ""):
+        installer_RabbitMQ()
+
+def check_all_programs():#Проверяет версию RabbitMQ устанавливает или меняет её
+    
+    check_nodejs()
+    check_java()
+    check_erlang()
+    check_mysql()
+    check_ST()
+    check_Git()
+    check_RabbitMQ()
+
 def number_version_java():#Определяет установлен или нет Java, если установлен возврашает установленую версию
     get_version_command = 'java -v'
     popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -180,3 +205,78 @@ def installer_mysql_win():#Устанавливает MySQL для Windows
 
     get_version_command = 'mysql -u root -p < schema/mysql/createdb.sql'
     subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+
+def number_version_ST():#Определяет установлен или нет ST, если установлен возврашает установленую версию
+    get_version_command = 'sourceteree -v'
+    popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    retvalue = ''
+    try:
+        stdout, stderr = popen.communicate()
+        popen.wait()
+        RabbitMQ = stdout.strip().decode("utf-8")
+
+    finally:
+        popen.stdout.close()
+        popen.stderr.close()
+    return RabbitMQ
+
+def installer_ST():#Устанавливает source tree
+    if initialization_system() == "win":
+        installer_ST_win()
+
+def installer_ST_win():#Устанавливает source tree для Windows
+    base.configure_common_apps()
+    base.download("https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTreeSetup-3.3.9.exe", "./SourceTreeSetup-3.3.9.exe")
+
+    if (subprocess.call("SourceTreeSetup-3.3.9.exe") != 0):
+        exit(0)
+
+def number_version_git():#Определяет установлен или нет Git, если установлен возврашает установленую версию
+    get_version_command = 'git -v'
+    popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    retvalue = ''
+    try:
+        stdout, stderr = popen.communicate()
+        popen.wait()
+        nodejs_version = stdout.strip().decode("utf-8")
+
+    finally:
+        popen.stdout.close()
+        popen.stderr.close()
+    return nodejs_version
+
+def installer_Git():#Устанавливает Git
+    if initialization_system() == "win":
+        installer_Git_win()
+
+def installer_Git_win():#Устанавливает Git для Windows 
+    base.configure_common_apps()
+    base.download("https://github.com/git-for-windows/git/releases/download/v2.27.0.windows.1/Git-2.27.0-64-bit.exe", "./Git-2.27.0-64-bit.exe")
+
+    if (subprocess.call("Git-2.27.0-64-bit.exe") != 0):
+        exit(0)
+
+def number_version_RabbitMQ():#Определяет установлен или нет RabbitMQ, если установлен возврашает установленую версию
+    get_version_command = 'rabbc -v'
+    popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    retvalue = ''
+    try:
+        stdout, stderr = popen.communicate()
+        popen.wait()
+        RabbitMQ = stdout.strip().decode("utf-8")
+
+    finally:
+        popen.stdout.close()
+        popen.stderr.close()
+    return RabbitMQ
+
+def installer_RabbitMQ():#Устанавливает RabbitMQ
+    if initialization_system() == "win":
+        installer_RabbitMQ_win()
+
+def installer_RabbitMQ_win():#Устанавливает RabbitMQ для Windows
+    base.configure_common_apps()
+    base.download("https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.5/rabbitmq-server-3.8.5.exe", "./rabbitmq-server-3.8.5.exe")
+
+    if (subprocess.call("Git-2.27.0-64-bit.exe") != 0):
+        exit(0)
