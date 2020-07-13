@@ -67,52 +67,38 @@ def refresh_nodejs_version():#Меняет версию Nodejs
 
 
 def installer_nodejs_win():#Устанавливает Nodejs для Windows
-    
-    #f = open("node-v" + number_version_nodejs() +  "-x" + initialization_system_capacity() + ".msi", "wb")
     base.configure_common_apps()
-    #input(os.environ["PATH"] )
-    #base.download("https://nodejs.org/dist/v10.21.0/node-v10.21.0-x64.msi", "./node-v10.21.0-x64.msi")
     base.download("https://nodejs.org/download/release/" + number_version_nodejs() + "/node-" + number_version_nodejs() + "-" + initialization_system() + "-x" + initialization_system_capacity() + ".zip", "./node-v10.21.0-x64.msi")
-    #send_request = requests.get("https://nodejs.org/dist/v" + number_version_nodejs() + "/node-v" + number_version_nodejs() + "-x" + initialization_system_capacity() + ".msi")
-    #f.write(send_request.content)
-    #f.close()
-    #input("node-" + number_version_nodejs() + "-x" + initialization_system_capacity() + ".msi")
+
     if (subprocess.call("msiexec /i node-" + number_version_nodejs() + "-x" + initialization_system_capacity() + ".msi") != 0):
         exit(0)
 
-    print("Noojs installer")
+    print("Nodejs installer")
     exit(0)
 
 def installer_nodejs():#Устанавливает Nodejs
     if initialization_system() == "win":
         installer_nodejs_win()
 
-def begin_nodejs():#Проверяет версию Nodejs устанавливает или меняет её
+def check_nodejs():#Проверяет версию Nodejs устанавливает или меняет её
     
-    if (number_version_nodejs() != ""):
-        
-        refresh_nodejs_version()
-    else:
-        
+    if (number_version_nodejs() == ""):
         installer_nodejs()
 
-def begin_java():#Проверяет версию java устанавливает или меняет её
+def check_java():#Проверяет версию java устанавливает или меняет её
     
-    if (number_version_java() != ""):
-        
-        refresh_java_version()
-    else:
-        
+    if (number_version_java() == ""):
         installer_java()
 
-def begin_erlang():#Проверяет версию erlang устанавливает или меняет её
+def check_erlang():#Проверяет версию erlang устанавливает или меняет её
     
-    if (number_version_erlang() != ""):
-        
-        refresh_erlang_version()
-    else:
-        
+    if (number_version_erlang() == ""):
         installer_erlang()
+
+def check_mysql():#Проверяет версию MySQL устанавливает или меняет её
+    
+    if (number_version_mysql() == ""):
+        installer_mysql()
 
 def number_version_java():#Определяет установлен или нет Java, если установлен возврашает установленую версию
     get_version_command = 'java -v'
@@ -130,11 +116,11 @@ def number_version_java():#Определяет установлен или не
 
 def installer_java_win():#Устанавливает Java для Windows
     base.configure_common_apps()
-    base.download("https://www.java.com/ru/download/win8.jsp/chromeinstall-8u251.exe", "./chromeinstall-8u251.exe")
+    base.download("https://javadl.oracle.com/webapps/download/AutoDL?BundleId=242030_3d5a2bb8f8d4428bbe94aed7ec7ae784", "./chromeinstall-8u251.exe")
     if (subprocess.call(['runas', '/user:Administrator', 'chromeinstall-8u251.exe']) != 0):
         exit(0)
 
-    print("Noojs java")
+    print("java installer")
     exit(0)
 
 def installer_java():#Устанавливает Java
@@ -161,11 +147,37 @@ def installer_erlang():#Устанавливает erlang
 
 def installer_erlang_win():#Устанавливает erlang для Windows
     base.configure_common_apps()
-    base.download("https://www.erlang.org/downloads/otp_win64_23.0.exe", "./otp_win64_23.0.exe")
+    base.download("http://erlang.org/download/otp_win64_23.0.exe", "./otp_win64_23.0.exe")
     if (subprocess.call("otp_win64_23.0.exe") != 0):
         exit(0)
 
-    print("Noojs erlang")
+    print("erlang installer")
     exit(0)
 
-installer_erlang()
+def number_version_mysql():#Определяет установлен или нет MySQL, если установлен возврашает установленую версию
+    get_version_command = 'mysqld -v'
+    popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    retvalue = ''
+    try:
+        stdout, stderr = popen.communicate()
+        popen.wait()
+        mysql_version = stdout.strip().decode("utf-8")
+
+    finally:
+        popen.stdout.close()
+        popen.stderr.close()
+    return mysql_version
+
+def installer_mysql():#Устанавливает Mysql
+    if initialization_system() == "win":
+        installer_mysql_win()
+
+def installer_mysql_win():#Устанавливает MySQL для Windows
+    base.configure_common_apps()
+    base.download("https://soft.mydiv.net/win/dlfileb8373_399751/MySQL/mysql-installer-community-8.0.20.0.msi", "./mysql-installer-community-8.0.20.0")
+
+    if (subprocess.call("msiexec /i mysql-installer-community-8.0.20.0") != 0):
+        exit(0)
+
+    get_version_command = 'mysql -u root -p < schema/mysql/createdb.sql'
+    subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

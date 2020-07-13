@@ -4,17 +4,12 @@ sys.path.append('../build_tools/scripts')
 import os
 import base
 import subprocess
-import requests
-import zipfile
-import shutil
-import platform
 import installDevelop
 
 def check_nodejs_version():
   get_version_command = 'node -v'
   popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
   retvalue = ''
-
   try:
     stdout, stderr = popen.communicate()
     popen.wait()
@@ -24,16 +19,14 @@ def check_nodejs_version():
   finally:
     popen.stdout.close()
     popen.stderr.close()
-  
+
   print('Installed Node.js version: ' + nodejs_version)
-  if (nodejs_version != ""):
-    nodejs_cur_version = int(nodejs_version.split('.')[0][1:])
-  
-    if (10 != nodejs_cur_version):
-      print('Node.js version!')
-      return False
-  else:
-    new_nodejs_version()
+  nodejs_min_version = 8
+  nodejs_cur_version = int(nodejs_version.split('.')[0][1:])
+  if (nodejs_min_version > nodejs_cur_version):
+    print('Node.js version!', nodejs_min_version, 'more than', nodejs_cur_version, '. Min version Node.js 8.x')
+    return False
+
   return True
 
 def install_module(path):
@@ -66,44 +59,47 @@ def start_mac_services():
 def run_integration_example():
   base.cmd_in_dir('../document-server-integration/web/documentserver-example/nodejs', 'python', ['run-develop.py'])
 
-try:
-  installDevelop.cast_nodejs()
-  #base.print_info('check Node.js version')
-  #if (True != check_nodejs_version()):
- # 	exit(0)
-  platform = base.host_platform()
-  #if ("windows" == platform):
-  #  restart_win_rabbit()
-  #elif ("mac" == platform):
-  #  start_mac_services()
+check_nodejs()
+check_java()
+check_erlang()
+check_mysql()
 
-  base.print_info('Build modules')
-  #base.cmd_in_dir('../build_tools', 'python', ['configure.py', '--branch', 'develop', '--module', 'develop', '--update', '1', '--update-light', '1', '--clean', '0', '--sdkjs-addon', 'comparison', '--sdkjs-addon', 'content-controls', '--sdkjs-addon', 'pivot-tables', '--web-apps-addon', 'mobile'])
-  #base.cmd_in_dir('../build_tools', 'python', ['make.py'])
+if (True != check_nodejs_version()):
+  exit(0)
 
-  run_integration_example()
+installDevelop.cast_nodejs()
+exit(0)
+platform = base.host_platform()
+if ("windows" == platform):
+  restart_win_rabbit()
+elif ("mac" == platform):
+  start_mac_services()
 
-  #base.create_dir('App_Data')
+base.print_info('Build modules')
+base.cmd_in_dir('../build_tools', 'python', ['configure.py', '--branch', 'develop', '--module', 'develop', '--update', '1', '--update-light', '1', '--clean', '0', '--sdkjs-addon', 'comparison', '--sdkjs-addon', 'content-controls', '--web-apps-addon', 'mobile'])
+base.cmd_in_dir('../build_tools', 'python', ['make.py'])
 
-  #base.create_dir('SpellChecker/dictionaries')
-  #base.copy_dir_content('../dictionaries', 'SpellChecker/dictionaries', '', '.git')
+run_integration_example()
 
-  #install_module('DocService')
-  #install_module('Common')
-  #install_module('FileConverter')
-  #install_module('SpellChecker')
+base.create_dir('App_Data')
 
-  base.set_env('NODE_ENV', 'development-' + platform)
-  base.set_env('NODE_CONFIG_DIR', '../../Common/config')
+base.create_dir('SpellChecker/dictionaries')
+base.copy_dir_content('../dictionaries', 'SpellChecker/dictionaries', '', '.git')
 
-  if ("mac" == platform):
-    base.set_env('DYLD_LIBRARY_PATH', '../../FileConverter/bin/')
-  elif ("linux" == platform):
-    base.set_env('LD_LIBRARY_PATH', '../../FileConverter/bin/')
+install_module('DocService')
+install_module('Common')
+install_module('FileConverter')
+install_module('SpellChecker')
 
-  run_module('DocService/sources', ['server.js'])
-  run_module('DocService/sources', ['gc.js'])
-  run_module('FileConverter/sources', ['convertermaster.js'])
-  #run_module('SpellChecker/sources', ['server.js'])
-except SystemExit:
-  input("Ignoring SystemExit. Press Enter to continue...")
+base.set_env('NODE_ENV', 'development-' + platform)
+base.set_env('NODE_CONFIG_DIR', '../../Common/config')
+
+if ("mac" == platform):
+  base.set_env('DYLD_LIBRARY_PATH', '../../FileConverter/bin/')
+elif ("linux" == platform):
+  base.set_env('LD_LIBRARY_PATH', '../../FileConverter/bin/')
+
+run_module('DocService/sources', ['server.js'])
+run_module('DocService/sources', ['gc.js'])
+run_module('FileConverter/sources', ['convertermaster.js'])
+run_module('SpellChecker/sources', ['server.js'])
