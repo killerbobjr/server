@@ -65,7 +65,6 @@ def refresh_nodejs_version():#Меняет версию Nodejs
     #shutil.rmtree('archive')
     print("Noojs installer")
 
-
 def installer_nodejs_win():#Устанавливает Nodejs для Windows
     base.configure_common_apps()
     base.download("https://nodejs.org/download/release/" + number_version_nodejs() + "/node-" + number_version_nodejs() + "-" + initialization_system() + "-x" + initialization_system_capacity() + ".zip", "./node-v10.21.0-x64.msi")
@@ -180,4 +179,4 @@ def installer_mysql_win():#Устанавливает MySQL для Windows
         exit(0)
 
     get_version_command = 'mysql -u root -p < schema/mysql/createdb.sql'
-    subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 

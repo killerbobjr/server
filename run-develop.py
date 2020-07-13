@@ -18,7 +18,7 @@ def check_nodejs_version():
 
   finally:
     popen.stdout.close()
-    popen.stderr.close()
+    popen.stderr.close() 
 
   print('Installed Node.js version: ' + nodejs_version)
   nodejs_min_version = 8
