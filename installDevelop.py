@@ -4,7 +4,6 @@ import sys
 import os
 import base
 import subprocess
-import requests
 import zipfile
 import shutil
 import platform
@@ -44,7 +43,6 @@ def refresh_nodejs_version():#Меняет версию Nodejs
 
 
     base.download("https://nodejs.org/download/release/" + number_version_nodejs() + "/node-" + number_version_nodejs() + "-" + initialization_system() + "-x" + initialization_system_capacity() + ".zip", "./node-v10.21.0-win-x64.zip")
-    #send_request = requests.get("https://nodejs.org/download/release/" + number_version_nodejs() + "/node-" + number_version_nodejs() + "-" + initialization_system() + "-x" + initialization_system_capacity() + ".zip")
     file.write(send_request.content)
     file.close()
 
@@ -62,7 +60,6 @@ def refresh_nodejs_version():#Меняет версию Nodejs
             os.system(f'rd /S /Q {folder_to}\\{f}')
             shutil.copytree(os.path.join(folder_from, f), os.path.join(folder_to, f))
 
-    #shutil.rmtree('archive')
     print("Noojs installer")
 
 def installer_nodejs_win():#Устанавливает Nodejs для Windows
@@ -121,7 +118,6 @@ def check_all_programs():#Проверяет версию RabbitMQ устана�
     check_erlang()
     check_mysql()
     check_ST()
-    check_Git()
     check_RabbitMQ()
 
 def number_version_java():#Определяет установлен или нет Java, если установлен возврашает установленую версию
@@ -229,31 +225,6 @@ def installer_ST_win():#Устанавливает source tree для Windows
     base.download("https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTreeSetup-3.3.9.exe", "./SourceTreeSetup-3.3.9.exe")
 
     if (subprocess.call("SourceTreeSetup-3.3.9.exe") != 0):
-        exit(0)
-
-def number_version_git():#Определяет установлен или нет Git, если установлен возврашает установленую версию
-    get_version_command = 'git -v'
-    popen = subprocess.Popen(get_version_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    retvalue = ''
-    try:
-        stdout, stderr = popen.communicate()
-        popen.wait()
-        nodejs_version = stdout.strip().decode("utf-8")
-
-    finally:
-        popen.stdout.close()
-        popen.stderr.close()
-    return nodejs_version
-
-def installer_Git():#Устанавливает Git
-    if initialization_system() == "win":
-        installer_Git_win()
-
-def installer_Git_win():#Устанавливает Git для Windows 
-    base.configure_common_apps()
-    base.download("https://github.com/git-for-windows/git/releases/download/v2.27.0.windows.1/Git-2.27.0-64-bit.exe", "./Git-2.27.0-64-bit.exe")
-
-    if (subprocess.call("Git-2.27.0-64-bit.exe") != 0):
         exit(0)
 
 def number_version_RabbitMQ():#Определяет установлен или нет RabbitMQ, если установлен возврашает установленую версию
